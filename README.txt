@@ -1,4 +1,5 @@
 Ben Ryan - C15507277
+IP:Port: 35.187.173.16:5000
 Github: https://github.com/benr96/CloudComputingAssignment2
 Video: https://youtu.be/byXBfS57IKk
 

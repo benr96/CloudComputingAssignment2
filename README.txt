@@ -1,5 +1,5 @@
 Github: https://github.com/benr96/CloudComputingAssignment2
-Video: 
+Video: https://youtu.be/byXBfS57IKk
 
 Part 1:
 	1. On manager run: 'docker swarm init'

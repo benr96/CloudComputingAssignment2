@@ -1,0 +1,115 @@
+externalIP=35.187.173.16
+port=5000
+address=http://$externalIP:$port
+echo $address
+echo ''
+
+echo Display index
+echo Command: curl $address
+curl $address
+
+
+echo List all containers
+echo Command: curl -s -X GET -H \'Accept: application/json\' $address/containers '| python -mjson.tool'
+curl -s -X GET -H 'Accept: application/json' $address/containers | python -mjson.tool 
+
+
+echo List all running containers
+echo Command: curl -s -X GET -H \'Accept: application/json\' $address/containers?state=running '| python -mjson.tool'
+curl -s -X GET -H 'Accept: application/json' $address/containers?state=running | python -mjson.tool
+
+
+echo Inspect a specific container
+echo Enter a container ID to inspect
+read containerID
+echo Command: curl -s -X GET -H \'Accept: application/json\' $address/containers/$containerID '| python -mjson.tool'
+curl -s -X GET -H 'Accept: application/json' $address/containers/$containerID | python -mjson.tool 
+
+
+echo Dump specific container logs
+echo Enter a container ID to dump logs for
+read containerID
+echo Command: curl -s -X GET -H \'Accept: application/json\' $address/containers/$containerID/logs '| python -mjson.tool'
+curl -s -X GET -H 'Accept: application/json' $address/containers/$containerID/logs | python -mjson.tool
+
+
+echo List all images
+echo Command: curl -s -X GET -H \'Accept: application/json\' $address/images '| python -mjson.tool'
+curl -s -X GET -H 'Accept: application/json' $address/images | python -mjson.tool
+
+
+echo Create a new image
+echo Enter exact path of dockerfile to build image from
+read filepath
+echo Command: curl -X POST -H \'Accept: application/json\' -F file=@$filepath  $address/images '| python -mjson.tool'
+curl -X POST -H 'Accept: application/json' -F file=@$filepath  $address/images | python -mjson.tool
+
+
+echo Create a new container
+echo Enter image name to run container from
+read imgName
+echo Enter port number to run on e.g 5000:80
+read portNo
+
+request=$(cat <<EOF
+{"image": "$imgName",
+"publish": "$portNo"}
+EOF
+)
+
+echo Command: curl -s -X POST -H \'Content-Type: application/json\' $address/containers -d "$request"
+curl -s -X POST -H 'Content-Type: application/json' $address/containers -d "$request"
+
+
+echo Change a containers state:
+echo Enter a container ID
+read containerID
+echo Enter desired state: running or stopped
+read state
+
+request=$(cat <<EOF
+{"state": "$state"}
+EOF
+)
+
+echo Command: curl -s -X PATCH -H \'Content-Type: application/json\' $address/containers/$containerID -d "$request" '| python -mjson.tool'
+curl -s -X PATCH -H 'Content-Type: application/json' $address/containers/$containerID -d "$request" | python -mjson.tool
+
+
+echo Change a specific images attributes
+echo Enter an image ID
+read imageID
+echo Enter a tag e.g nginx:1.2
+read tag
+
+request=$(cat <<EOF
+{"tag": "$tag"}
+EOF
+)
+
+echo Command: curl -s -X PATCH -H 'Content-Type: application/json' $address/images/$imageID -d "$request" '| python -mjson.tool'
+curl -s -X PATCH -H \'Content-Type: application/json\' $address/images/$imageID -d "$request" | python -mjson.tool
+
+
+echo Delete a specific container
+echo Enter container ID to delete
+read containerID
+echo Command: curl -s -X DELETE -H \'Accept: application/json\' $address/containers/$containerID '| python -mjson.tool'
+curl -s -X DELETE -H 'Accept: application/json' $address/containers/$containerID | python -mjson.tool
+
+
+echo Delete all containers
+echo Command: curl -s -X DELETE -H \'Accept: application/json\' $address/containers
+curl -s -X DELETE -H 'Accept: application/json' $address/containers
+
+
+echo Delete a specific image
+echo Enter image ID to delete
+read imageID
+echo Command: curl -s -X DELETE -H \'Accept: application/json\' $address/images/$imageID
+curl -s -X DELETE -H 'Accept: application/json' $address/images/$imageID
+
+
+echo Delete all images
+echo Command: curl -s -X DELETE -H 'Accept: application/json' http://localhost:5000/images
+curl -s -X DELETE -H 'Accept: application/json' $address/images
